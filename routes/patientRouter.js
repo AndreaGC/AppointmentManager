@@ -7,13 +7,14 @@ const patientController = require('../controllers/appointmentController');
 const router = express.Router();
 
 router.post('/patients', patientController.createPatient);
+router.post('/patients/:id/appointments', patientController.addAppointment);
+
 /*router.get('/', userController.getUsers);
 router.get('/:id', userController.getUserById);
 router.put('/:id', userController.updateUser);
 router.delete('/:id', userController.deleteUser);
-router.post('/:id/appointments', appointmentController.addAppointment);
-
 */
+
 module.exports = router;
 
 

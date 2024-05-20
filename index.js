@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const userRoutes = require('./routes/patientRouter');
 
+
 const app = express()
 
 app.use(express.json());
@@ -18,6 +19,7 @@ mongoose.connect("mongodb+srv://ancgc:AcmNM24@cluster101.dhgcnvj.mongodb.net/app
 
 
 app.use('/api', userRoutes);
+
 
 app.listen(3000, () => {
     console.log("Serve is running on port 3000");
