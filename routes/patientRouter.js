@@ -8,6 +8,7 @@ const router = express.Router();
 
 router.post('/patients', patientController.createPatient);
 router.post('/patients/:id/appointments', patientController.addAppointment);
+router.get('/patients/:id/appointments', patientController.getAppointmentsByUser);
 
 /*router.get('/', userController.getUsers);
 router.get('/:id', userController.getUserById);

@@ -62,6 +62,23 @@ exports.createPatient = async (req, res) => {
     }
 };
 
+exports.getAppointmentsByUser = async (req, res) => {
+  const userId = req.params.id; // Obtener el ID del usuario desde los parámetros de la URL
+
+  try {
+      // Buscar al usuario por su ID
+      const patient = await Patient.findById(userId).populate('appointments');
+
+      if (!patient) {
+          return res.status(404).json({ message: 'Patient not found' });
+      }
+
+      // Retornar las citas del usuario
+      res.status(200).json(patient.appointments);
+  } catch (error) {
+      res.status(500).json({ message: error.message });
+  }
+};
 
 /*
 // Get all users
