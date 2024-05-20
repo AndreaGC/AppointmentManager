@@ -1,22 +1,22 @@
 const mongoose = require('mongoose');
 
-const patientSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true,
-        trim: true
-    },
-    email: {
-        type: String,
-        required: true,
-        trim: true
-    },
-    password: {
-        type: String,
-        required: true,
-        //match: /^[A-Za-z0-9]{8,}$/
-    }
+const AppointmentSchema = new mongoose.Schema({
+  appointmentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Appointment' },
+  date: Date,
+  time: String,
+  doctor: String,
+  location: String,
+  details: String,
+  status: String
 });
 
-const Patient = mongoose.model('patients', patientSchema);
-module.exports = Patient;
+const PatientUserSchema = new mongoose.Schema({
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
+  password: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  appointments: [AppointmentSchema]
+});
+
+const PatientUser = mongoose.model('patients', PatientUserSchema);
+module.exports = PatientUser;
