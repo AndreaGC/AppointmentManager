@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const PatientUser = require('./patients.model.js').schema;
+const TypeAppointment = require ('./typeAppointment.model.js').schema;
 
 const AppointmentSchema = new mongoose.Schema({
     patientUserId: { type: mongoose.Schema.Types.ObjectId, ref: 'PatientUser', required: true },

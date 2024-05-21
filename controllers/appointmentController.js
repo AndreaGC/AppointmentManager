@@ -29,27 +29,13 @@ exports.addAppointment = async (req, res) => {
 
       await newAppointment.save();
 
-      // Añadir la referencia de la cita al paciente
-      patient.appointments.push({
-          appointmentId: newAppointment._id,
-          date: req.body.date,
-          time: req.body.time,
-          doctor: req.body.doctor,
-          location: req.body.location,
-          details: req.body.details,
-          status: req.body.status
-      });
 
-      await patient.save();
 
-      res.status(200).json(patient);
+      res.status(200).json(newAppointment);
   } catch (error) {
       res.status(500).json({ message: error.message });
   }
 };
-
-//-----------------------------------------------------------------------------------------
-// src/controllers/userController.js
 
 
 // Create a new user
@@ -66,67 +52,75 @@ exports.getAppointmentsByUser = async (req, res) => {
   const userId = req.params.id; // Obtener el ID del usuario desde los parámetros de la URL
 
   try {
-      // Buscar al usuario por su ID
-      const patient = await Patient.findById(userId).populate('appointments');
+      // Buscar las citas donde patientUserId sea igual al ID del usuario
+      const appointments = await Appointment.find({ patientUserId: userId });
 
-      if (!patient) {
-          return res.status(404).json({ message: 'Patient not found' });
+      if (!appointments) {
+          return res.status(404).json({ message: 'Appointments not found for this user' });
       }
 
-      // Retornar las citas del usuario
-      res.status(200).json(patient.appointments);
+      // Retornar las citas encontradas
+      res.status(200).json(appointments);
   } catch (error) {
       res.status(500).json({ message: error.message });
   }
 };
 
-/*
-// Get all users
-exports.getUsers = async (req, res) => {
+//Modificar una cita
+exports.updateAppointment = async (req, res) => {
+  const { id, appointmentId } = req.params; // ID del paciente y de la cita a actualizar
+  const updates = req.body; // Datos actualizados de la cita
+
   try {
-    const users = await User.find();
-    res.status(200).json(users);
+    // Verificar si el paciente existe
+    const patient = await Patient.findById(id);
+    if (!patient) {
+      return res.status(404).json({ message: 'Patient not found' });
+    }
+
+    // Verificar si la cita existe en la colección de citas
+    const existingAppointment = await Appointment.findById(appointmentId);
+    if (!existingAppointment) {
+      return res.status(404).json({ message: 'Appointment not found' });
+    }
+
+    // Verificar que la cita pertenezca al paciente específico
+    if (existingAppointment.patientUserId.toString() !== id) {
+      return res.status(404).json({ message: 'Appointment not found for this patient' });
+    }
+
+    // Actualizar la cita en la colección de citas
+    const updatedAppointment = await Appointment.findByIdAndUpdate(appointmentId, updates, { new: true });
+
+    res.status(200).json(updatedAppointment);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
-// Get a user by ID
-exports.getUserById = async (req, res) => {
-  try {
-    const user = await User.findById(req.params.id);
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-    res.status(200).json(user);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+//Eliminar una cita
+exports.deleteAppointment = async (req, res) => {
+  const { id, appointmentId } = req.params; // ID del paciente y de la cita a eliminar
 
-// Update a user by ID
-exports.updateUser = async (req, res) => {
   try {
-    const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+    // Verificar si el paciente existe
+    const patient = await Patient.findById(id);
+    if (!patient) {
+      return res.status(404).json({ message: 'Patient not found' });
     }
-    res.status(200).json(user);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};
 
-// Delete a user by ID
-exports.deleteUser = async (req, res) => {
-  try {
-    const user = await User.findByIdAndDelete(req.params.id);
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+    // Verificar si la cita existe y pertenece al paciente
+    const appointment = await Appointment.findOne({ _id: appointmentId, patientUserId: id });
+    if (!appointment) {
+      return res.status(404).json({ message: 'Appointment not found' });
     }
-    res.status(200).json({ message: 'User deleted' });
+
+    // Eliminar la cita de la colección de citas
+    await Appointment.findByIdAndDelete(appointmentId);
+
+    res.status(200).json({ message: 'Appointment deleted successfully' });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error(error);
+    res.status(500).json({ message: error.message });
   }
 };
-*/

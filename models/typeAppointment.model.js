@@ -6,5 +6,5 @@ const TypeAppointmentSchema = new mongoose.Schema({
     preparationInstructions: String
 });
 
-const TypeAppointment = mongoose.model('TypeAppointment', TypeAppointmentSchema);
+const TypeAppointment = mongoose.model('Type_Appointment', TypeAppointmentSchema);
 module.exports = TypeAppointment;
